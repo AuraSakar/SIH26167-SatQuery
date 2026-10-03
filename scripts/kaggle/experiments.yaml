@@ -1,0 +1,226 @@
+# Kaggle experiment registry
+# Each entry maps a short experiment name to everything runner.py needs.
+#
+# Fields:
+#   notebook         - path from repo root to the source .ipynb file
+#   kernel_slug      - the Kaggle kernel slug (username/<slug> is derived at runtime)
+#   experiment_dir   - repo-relative path used as the local results destination
+#   remote_output_dir - subdirectory name under /kaggle/working/satquery-output/
+#                       that the notebook writes its artifacts into
+#   result_files     - list of relative paths within remote_output_dir to copy locally
+#   gpu              - true/false (GPU jobs default to Kaggle NvidiaTeslaT4 / T4 x2)
+#   internet         - true/false (passed to kernel-metadata.json; required to clone repo)
+#   download_policy  - metadata_only excludes declared large_result_files from local retrieval
+
+phase3a-grounding-baseline:
+  notebook: notebooks/kaggle_phase3a.ipynb
+  kernel_slug: satquery-phase3a-grounding
+  experiment_dir: experiments/phase3a_grounding_dino_vrsbench
+  remote_output_dir: phase3a-grounding-dino
+  result_files:
+    - validation_metrics.json
+    - validation_predictions.jsonl
+  gpu: true
+  internet: true
+
+phase2b-smolvlm-lora:
+  notebook: notebooks/kaggle_phase2b.ipynb
+  kernel_slug: satquery-phase2b-smolvlm
+  experiment_dir: experiments/phase2b_smolvlm_rsvqa_lr
+  remote_output_dir: phase2b
+  result_files:
+    - metrics/train_metrics.json
+    - metrics/stability_smoke.json
+    - run.json
+  gpu: true
+  internet: true
+
+phase3b-grounding-thresholds:
+  notebook: notebooks/kaggle_phase3b.ipynb
+  kernel_slug: satquery-phase3b-thresholds
+  experiment_dir: experiments/phase3b_grounding_threshold_calibration
+  remote_output_dir: phase3b-grounding-calibration
+  result_files:
+    - calibration.json
+    - validation_candidates.jsonl
+  gpu: true
+  internet: true
+
+phase3-final-grounding-test:
+  notebook: notebooks/kaggle_phase3_final_test.ipynb
+  kernel_slug: satquery-phase3-final-grounding-test
+  experiment_dir: experiments/phase3b_grounding_threshold_calibration
+  remote_output_dir: phase3-final-grounding-test
+  result_files:
+    - final_test_metrics.json
+    - final_test_predictions.jsonl
+  gpu: true
+  internet: true
+
+phase4-materialize-s1:
+  notebook: notebooks/kaggle_phase4_materialize_s1.ipynb
+  kernel_slug: satquery-phase4-materialize-s1
+  experiment_dir: experiments/phase4_bigearthnet_multisensor
+  remote_output_dir: phase4-bigearthnet-materialize-s1
+  result_files:
+    - materialization_report.json
+    - package_manifest.json
+    - runner_meta.json
+  large_result_files:
+    - phase4_s1_selected.tar.zst
+  download_policy: metadata_only
+  gpu: false
+  internet: true
+
+phase4-materialize-s2:
+  notebook: notebooks/kaggle_phase4_materialize_s2.ipynb
+  kernel_slug: satquery-phase4-materialize-s2
+  experiment_dir: experiments/phase4_bigearthnet_multisensor
+  remote_output_dir: phase4-bigearthnet-materialize-s2
+  result_files:
+    - materialization_report.json
+    - package_manifest.json
+    - runner_meta.json
+  large_result_files:
+    - phase4_s2_selected.tar.zst
+  download_policy: metadata_only
+  kernel_sources:
+    - satquery-phase4-materialize-s1
+  gpu: false
+  internet: true
+
+phase4d-native-raster-audit:
+  notebook: notebooks/kaggle_phase4d_native_raster_audit.ipynb
+  kernel_slug: satquery-phase4d-native-raster-audit
+  experiment_dir: experiments/phase4_bigearthnet_multisensor
+  remote_output_dir: phase4d-native-raster-audit
+  result_files:
+    - representative_raster_audit.json
+    - native_audit_runner_meta.json
+  kernel_sources:
+    - technobishu/satquery-phase4-materialize-s1
+    - technobishu/satquery-phase4-materialize-s2
+  gpu: false
+  internet: true
+
+phase4e-bifold-s1-validation:
+  notebook: notebooks/kaggle_phase4e_bifold_s1.ipynb
+  kernel_slug: satquery-phase4e-bifold-s1-validation
+  experiment_dir: experiments/phase4_bigearthnet_multisensor/phase4e/s1
+  remote_output_dir: phase4e-bifold-s1-validation
+  result_files:
+    - validation_result.json
+    - validation_predictions.jsonl
+    - runner_meta.json
+  kernel_sources:
+    - satquery-phase4-materialize-s1
+    - satquery-phase4-materialize-s2
+  gpu: true
+  internet: true
+
+phase4e-bifold-s2-validation:
+  notebook: notebooks/kaggle_phase4e_bifold_s2.ipynb
+  kernel_slug: satquery-phase4e-bifold-s2-validation
+  experiment_dir: experiments/phase4_bigearthnet_multisensor/phase4e/s2
+  remote_output_dir: phase4e-bifold-s2-validation
+  result_files:
+    - validation_result.json
+    - validation_predictions.jsonl
+    - runner_meta.json
+  kernel_sources:
+    - satquery-phase4-materialize-s1
+    - satquery-phase4-materialize-s2
+  gpu: true
+  internet: true
+
+phase4f-bifold-s2-head-adaptation:
+  notebook: notebooks/kaggle_phase4f_s2_head.ipynb
+  kernel_slug: satquery-phase4f-bifold-s2-head-adaptation
+  experiment_dir: experiments/phase4_bigearthnet_multisensor/phase4f/s2
+  remote_output_dir: phase4f-bifold-s2-head-adaptation
+  result_files:
+    - phase4f_s2_training_result.json
+    - phase4f_s2_validation_result.json
+    - phase4f_s2_validation_predictions.jsonl
+    - phase4f_s2_adapter_or_checkpoint_manifest.json
+    - phase4f_runner_meta.json
+  large_result_files:
+    - phase4f_s2_head.safetensors
+  download_policy: metadata_only
+  kernel_sources:
+    - satquery-phase4-materialize-s2
+  gpu: true
+  internet: true
+
+phase5a-bifold-joint-validation:
+  notebook: notebooks/kaggle_phase5a_bifold_joint.ipynb
+  kernel_slug: satquery-phase5a-bifold-joint-validation
+  experiment_dir: experiments/phase4_bigearthnet_multisensor/phase5a
+  remote_output_dir: phase5a-bifold-joint-validation
+  result_files:
+    - phase5a_joint_validation_result.json
+    - phase5a_joint_validation_predictions.jsonl
+    - phase5a_runner_meta.json
+    - phase5a_complementarity_report.json
+  kernel_sources:
+    - technobishu/satquery-phase4-materialize-s1
+    - technobishu/satquery-phase4-materialize-s2
+  gpu: true
+  internet: true
+
+# ---------------------------------------------------------------------------
+# Canonical Phase 4 experiments (P4-E01..P4-E04). Historical Phase 4A-5A
+# entries above keep their own slugs; these never reuse them.
+# canonical_launch_allowed: false refuses canonical execution (runner fails
+# closed) while the model/dataset contract is BLOCKED; --dry-run still works.
+# ---------------------------------------------------------------------------
+
+p4-e01-deterministic:
+  notebook: notebooks/kaggle_phase4_e01.ipynb
+  kernel_slug: satquery-phase4-e01-deterministic
+  experiment_dir: experiments/phase4_temporal_analytics/p4_e01
+  remote_output_dir: phase4-e01-deterministic
+  result_files:
+    - manifest.json
+  gpu: false
+  internet: true
+  canonical_launch_allowed: true
+
+p4-e02-changerex:
+  notebook: notebooks/kaggle_phase4_e02.ipynb
+  kernel_slug: satquery-phase4-e02-changerex
+  experiment_dir: experiments/phase4_temporal_analytics/p4_e02
+  remote_output_dir: phase4-e02-changerex
+  result_files:
+    - reproduction_metrics.json
+  gpu: true
+  internet: true
+  canonical_launch_allowed: false
+  runtime_need: open_cd_pytorch_pinned_revision
+  blocked_reason: LEVIR-CD and ChangerEx contracts are BLOCKED (checkpoint bytes and runtime lock pending)
+
+p4-e03-chg2cap:
+  notebook: notebooks/kaggle_phase4_e03.ipynb
+  kernel_slug: satquery-phase4-e03-chg2cap
+  experiment_dir: experiments/phase4_temporal_analytics/p4_e03
+  remote_output_dir: phase4-e03-chg2cap
+  result_files:
+    - caption_metrics.json
+  gpu: true
+  internet: true
+  canonical_launch_allowed: false
+  runtime_need: isolated_audited_chg2cap_environment
+  blocked_reason: LEVIR-CC and Chg2Cap contracts are BLOCKED (license audit and checkpoint provenance pending)
+
+p4-e04-sturm:
+  notebook: notebooks/kaggle_phase4_e04.ipynb
+  kernel_slug: satquery-phase4-e04-sturm
+  experiment_dir: experiments/phase4_temporal_analytics/p4_e04
+  remote_output_dir: phase4-e04-sturm
+  result_files:
+    - sturm_metrics.json
+  gpu: true
+  internet: true
+  canonical_launch_allowed: false
+  runtime_need: isolated_tensorflow_keras_sturm_environment
+  blocked_reason: STURM and STURM-Flood contracts are BLOCKED (archive hashes and radiometric scaling verification pending)

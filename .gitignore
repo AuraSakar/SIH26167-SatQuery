@@ -1,0 +1,56 @@
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.pytest-tmp/
+.ipynb_checkpoints/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Node / frontend
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# IDE and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Runtime data, databases, worktrees, and logs
+.worktrees
+.worktrees/
+data/*
+!data/.gitkeep
+*.db
+*.sqlite
+*.sqlite3
+*.log
+tmp/
+outputs/
+
+# Model artifacts (the registry and its documentation stay versioned)
+models/checkpoints/
+models/cache/
+*.ckpt
+*.pt
+*.pth
+*.safetensors
+
+# Generated source used only to rebuild the learning guide
+docs/Beginner-Learning-Guide-Raw.md
+
+# Kaggle runner — generated kernel push scratch directory
+scripts/kaggle/.kernel_push/
